@@ -1,0 +1,10 @@
+Package: CHSI
+Title: Exploring CHSI data
+Version: 0.1
+Author: Gabi Agrocostea <gabya06@gmail.com>
+Maintainer: Gabi Agrocostea <gabya06@gmail.com>
+Description: Attempt at visualizing CHSI data
+Depends:
+    R (>= 3.0.2)
+License: # getOptions('devtools.desc.license')
+LazyData: true

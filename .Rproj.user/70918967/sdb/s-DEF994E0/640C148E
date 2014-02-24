@@ -1,0 +1,17 @@
+{
+    "contents" : "# cleanData\n# \n# make sure data does not get loaded with factors\noptions(stringsAsFactors= FALSE)\ngetwd()\n# Load demographics data and clean\ndemoData <- read.csv('~/dev/Rstudio/data/DEMOGRAPHICS.csv')\n\nhead(demoData)\ntail(demoData)\n\n# remove first 2 columns\ndemoData <- demoData[,-(1:2)]\n# check\nhead(demoData)\n# remove columns 4 and 5\ndemoData <- (demoData[,-(4:5)])\nstr(demoData)\n\n# Load leading Causes of death data and clean\nleadCauseData <- read.csv('~/dev/Rstudio/data/LEADINGCAUSESOFDEATH.csv')\nstr(leadCauseData)\nhead(leadCauseData)\nsummary(leadCauseData)\n\n\n# remove first 2 columns and 4th\nleadCauseData <- leadCauseData[][-(1:2)]\nleadCauseData <-leadCauseData[][-(4)]\n\n#leadCauseData2[leadCauseData2=='-2222']<-0\n\n# clean up -1111 and -2222 values \nleadCauseData <- as.data.frame(lapply(leadCauseData, function(x){\n  replace(x, x < 0, 0) \n}))\nstr(leadCauseData)\nsummary(leadCauseData)\n\n# Load demographics data and clean\nriskData <- read.csv('~/dev/Rstudio/data/RISKFACTORSANDACCESSTOCARE.csv')\nsummary(riskData)\nnames(riskData)\n# remove first 2 columns and 4th\nriskData <- riskData[][-(1:2)]\nriskData <- riskData[][-(4)]\n\n# clean up -1111 and -2222 values \nriskData <- as.data.frame(lapply(riskData, function(x){\n  replace(x, x<0, 0)\n}))\n\n",
+    "created" : 1393268717265.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3044810198",
+    "id" : "640C148E",
+    "lastKnownWriteTime" : 1393268738,
+    "path" : "~/dev/Rstudio/CHSI/R/cleanData.R",
+    "project_path" : "R/cleanData.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
