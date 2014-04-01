@@ -1,7 +1,15 @@
+
+#install_github("devtools","hadley")
+library(devtools)
+library(roxygen2)
+#library(CHSI)
+library(plyr)
+library(reshape2)
+library(ggmap)
 library(ggplot2)
 library(ggthemes)
-library(colorbrewer)
 library(scales)
+
 # cleanData
 # 
 # make sure data does not get loaded with factors
@@ -26,6 +34,8 @@ str(demoData)
 demoData <- as.data.frame(lapply(demoData, function(x){
   replace(x, x<0, 0)
 }))
+
+
 
 # subset data to only include some columns
 demographics_dat <- subset(demoData, select = 
@@ -93,19 +103,36 @@ head(leadingCause_dat)
 # Load risk data and clean
 riskData <- read.csv('~/dev/Rstudio/data/RISKFACTORSANDACCESSTOCARE.csv')
 summary(riskData)
-names(riskData)
+
 # remove first 2 columns and 4th
 riskData <- riskData[][-(1:2)]
 riskData <- riskData[][-(4)]
 
-# clean up -1111 and -2222 values 
-riskData <- as.data.frame(lapply(riskData, function(x){
-  replace(x, x<0, 0)
-}))
 
 # subset only certain columns
 risk_dat <- subset(riskData, select = c(CHSI_County_Name:CHSI_State_Abbr, 
-                                        No_Exercise, Few_Fruit_Veg, Obesity, High_Blood_Pres, Diabetes, Uninsured))
-
+                                        No_Exercise, Few_Fruit_Veg, Obesity, 
+                                        High_Blood_Pres, Diabetes, Uninsured))
+# change names
 nms_risk <- c("county.name","state.name","state.abbr","no.exercise","few.fruit","obesity","high.blood","diabetes","no.ins")
 names(risk_dat)<- nms_risk
+
+# subset data for values >0 to exclude the -1111 and -2222 values
+risk_dat <- with(risk_dat, subset(risk_dat, (no.exercise>0) & 
+                                    (few.fruit>0) & (obesity>0) & (high.blood>0) & 
+                                    (diabetes>0) & (no.ins>0)))
+
+
+# create function to lower, will use on dataframe
+lower.df = function(v) 
+{
+  if(is.character(v)) return(tolower(v)) 
+  else return(v)
+}
+# use lower letters across all dataframes - easier for merging data
+risk_dat <- data.frame(lapply(risk_dat, lower.df))
+
+# clean up -1111 and -2222 values --> should just remove the data instead!!
+# riskData <- as.data.frame(lapply(riskData, function(x){
+#   replace(x, x<0, 0)
+# }))
