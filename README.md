@@ -48,20 +48,20 @@ While the demographics dataset only included one missing value, the risk factors
 
 #### Excerpt of working with the Risk Factors dataset in R:
 
-``` r, echo=FALSE, results='asis', comment =''
+``` { r chunkLabel echo=FALSE, results='asis', comment =''}
 
-#### Load risk data and clean
+# Load risk data and clean
 riskData <- read.csv('~/dev/Rstudio/data/RISKFACTORSANDACCESSTOCARE.csv')
 summary(riskData)
 
-#### remove first 2 columns and 4th
+# remove first 2 columns and 4th
 riskData <- riskData[][-(1:2)]
 riskData <- riskData[][-(4)]
 #### subset only certain columns
 risk_dat <- subset(riskData, select = c(CHSI_County_Name:CHSI_State_Abbr, 
                                         No_Exercise, Few_Fruit_Veg, Obesity, 
                                         High_Blood_Pres, Diabetes, Uninsured))
-#### change names
+# change names
 nms_risk <- c("county.name","state.name","state.abbr","no.exercise","few.fruit","obesity","high.blood","diabetes","no.ins")
 names(risk_dat)<- nms_risk
 #### subset data for values >0 to exclude the -1111 and -2222 not reported missing values
@@ -69,15 +69,14 @@ risk_dat <- with(risk_dat, subset(risk_dat, (no.exercise>0) &
                                     (few.fruit>0) & (obesity>0) & (high.blood>0) & 
                                     (diabetes>0) & (no.ins>0)))
 
-#### create function to lower, will use on dataframe
+# create function to lower, will use on dataframe
 lower.df = function(v) 
 {
   if(is.character(v)) return(tolower(v)) 
   else return(v)
 }
-#### use lower letters across all dataframes 
+# use lower letters across all dataframes 
 risk_dat <- data.frame(lapply(risk_dat, lower.df))
-
 ```
 
 ## Charts
