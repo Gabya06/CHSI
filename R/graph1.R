@@ -9,6 +9,8 @@ plt1 <- ggplot(data = risk_dat, aes(x=state.abbr, y = no.exercise, color = no.ex
   geom_point() +
   scale_color_continuous(name = "% No Exercise") +
   theme_classic() +
+  xlab(label = "States") +
+  ylab(label = "No Exercise") + 
   ggtitle(label = "States and No exercise")
 plt1
 
@@ -26,26 +28,54 @@ g <- ggplot(data = risk_dat, aes(x=no.exercise, y = few.fruit,
 g
   
 # plot of percentage of ppl who reported eating few fruit and ppl not exercising
-# this is grouped by state.abbr
-g1 <- ggplot(data = risk_dat, aes(x=no.exercise, 
-                                  y = few.fruit, 
-                                  size= no.exercise, 
+# this is grouped by state.abbr + faceted
+g1_noExFruit <- ggplot(data = risk_dat, aes(x=(no.exercise/100), 
+                                  y = (few.fruit/100), 
+                                  size = no.exercise, 
                                   color = state.abbr, 
-                                  group=state.abbr)) +
-  theme_classic() + 
-  geom_point() + 
-  scale_color_brewer(type = "seq",palette = "PuRd") + 
+                                  group = state.abbr)) +
+  theme_stata(base_size = 10, base_family = 'Verdana') + 
+  geom_point(na.rm = T) + 
+  scale_color_discrete() +  
+  scale_x_continuous(labels = percent) +
+  scale_y_continuous(labels = percent) +
   xlab(label = "No Exercise") +
   ylab(label = "Eating few fruits") + 
-  ggtitle(label = "Percentage of people reporting not exercising\nand eating few fruits")
-g1
+  theme(legend.position = 'None') + 
+  facet_wrap(~state.abbr) +
+  ggtitle(label = "Percentage of People Reporting Not Exercising and Eating Few fruits by State")
+g1_noExFruit
+
+
+# plot of percentage of obesity by ppl who reported not exercising
+# this is grouped by state.name + faceted
+g1_noExOb <- ggplot(data = risk_dat[risk_dat$obesity>34,], aes(x=(no.exercise/100), 
+                                            y = (obesity/100), 
+                                            size = obesity, 
+                                            color = state.name, 
+                                            group = state.name)) +
+  theme_stata(base_size = 12, base_family = 'Verdana') + 
+  geom_point(na.rm = F) + 
+  scale_color_discrete() +  
+  scale_x_continuous(labels = percent) +
+  scale_y_continuous(labels = percent) +
+  scale_size_continuous(range = c(10,14))+
+  xlab(label = "No Exercise") +
+  ylab(label = "Obesity > 35 %") + 
+  theme(legend.position = 'None')  + 
+  coord_flip() +
+  facet_wrap(~state.name) +
+  ggtitle(label = "Percentage of Obesity over 35% in Relation to Not Exercising by State")
+g1_noExOb
 
 
 # plot of states and obessity
-g2 <- ggplot(data = risk_dat, aes(x=obesity, y = state.abbr, group=state.abbr, color=obesity)) + 
-  geom_point() + theme_gdocs() + 
+g2 <- ggplot(data = risk_dat, aes(x = (obesity/100), y = state.name, group=state.name, color = obesity)) + 
+  geom_point() +   
+  scale_x_continuous(labels = percent, name ='Obesity Percents') +
+  scale_colour_gradient(limits=c(10, 40), low="blue", high="red") +
   ylab(label = "State") + 
-  scale_colour_gradient(limits=c(1, 100), low="blue", high="dark red") +
+  theme_economist(base_size = 12,base_family = 'Verdana') + 
   ggtitle(label = "Obesity and States")
 g2
 
@@ -89,7 +119,7 @@ g5
 # ---------------------------------------------------------------------------------------
 
 # high blood pressure and obesity scatter
-g8 <- ggplot(data = risk_dat, aes(x = high.blood, y = obesity, 
+g8 <- ggplot(data = risk_dat, aes(x = high.blood, y = obesity,
                                   color = factor(signif(obesity, 0)))) + 
   geom_point() + 
   theme_classic() + 
@@ -116,7 +146,7 @@ g9
 # Are there many people with high percentages of diabetes?
 # bar plot of the number of ppl with certain percentages of diabetes - 
 # bulk of ppl are [5-10]% range
-g10 <- ggplot(data = risk_dat, aes(x = diabetes, fill = factor(round(diabetes)))) +
+g10 <- ggplot(data = risk_dat, aes(x = diabetes, fill = factor(signif(diabetes,0)))) +
   geom_bar() 
 g10
 

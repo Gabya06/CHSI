@@ -9,14 +9,15 @@ library(ggmap)
 library(ggplot2)
 library(ggthemes)
 library(scales)
+require(coefplot)
 
-# cleanData
-# 
+# cleanData 
 # make sure data does not get loaded with factors
 options(stringsAsFactors= FALSE)
-getwd()
 
-# ----------------------Load demographics data and clean---------------------- 
+# -------------------------------------------------------------------------------------------------------------------------
+# Load demographics data and clean
+# -------------------------------------------------------------------------------------------------------------------------
 demoData <- read.csv('~/dev/Rstudio/data/DEMOGRAPHICS.csv')
 
 head(demoData)
@@ -51,10 +52,12 @@ names(demographics_dat)<-nms_demo_dat
 head(demographics_dat)
 
 
-# # ----------------------Load Leading Cause of death and clean---------------------- 
+# -------------------------------------------------------------------------------------------------------------------------
+# Load Leading Cause of death and clean
+# -------------------------------------------------------------------------------------------------------------------------
 leadCauseData <- read.csv('~/dev/Rstudio/data/LEADINGCAUSESOFDEATH.csv')
 str(leadCauseData)# there are alot of missing values -1111 and -2222.2 that need to be removed
-head(leadCauseData)
+head(leadCauseData) 
 summary(leadCauseData)
 
 
@@ -62,15 +65,6 @@ summary(leadCauseData)
 leadCauseData <- leadCauseData[][-(1:2)]
 leadCauseData <-leadCauseData[][-(4)]
 
-head(leadCauseData)
-
-# clean up -1111 and -2222 values 
-leadCauseData <- as.data.frame(lapply(leadCauseData, function(x){
-  replace(x, x < 0, 0) 
-}))
-
-str(leadCauseData) # too many columns
-summary(leadCauseData)
 
 # subset and pick only a few columns
 leadingCause_dat <- subset(leadCauseData, select = 
@@ -83,7 +77,7 @@ leadingCause_dat <- subset(leadCauseData, select =
                                F_Wh_HeartDis, F_Bl_HeartDis,F_Ot_HeartDis,F_Hi_HeartDis, 
                                F_Wh_Cancer, F_Bl_Cancer, F_Ot_Cancer, F_Hi_Cancer))
 
-
+# change the names
 nms_leadingCause_dat <- c("county.name","state.name","state.abbr", 
                           "cancer.wh.1_14","cancer.bl.1_14", "cancer.ot.1_14","cancer.his.1_14",
                           "cancer.wh.15_24", "cancer.bl.15_24","cancer.ot.15_24","cancer.his.15_24",
@@ -97,9 +91,52 @@ nms_leadingCause_dat <- c("county.name","state.name","state.abbr",
 names(leadingCause_dat)<-nms_leadingCause_dat
 head(leadingCause_dat)
 
+summary(leadingCause_dat)
+
+# find column names with heartdis pattern
+heartdis.nms <-  grep(pattern = "heartdis", x = names(leadingCause_dat), value = TRUE)
+# subset on leadingCause
+heartdis_dat <- leadingCause_dat[, c(heartdis.nms)]
+# add column with county info
+heartdis_dat <- cbind(leadingCause_dat[,c(1:3)] , leadingCause_dat[, c(heartdis.nms)])
+
+#heartdis_dat <- leadingCause_dat[, c(1:3,heartdis.nms)]
+#heartdis_dat <- cbind(leadingCause_dat[,c(1:3)], leadingCause_dat[,c(heartdis_dat)])
 
 
-# # ----------------------Load risk Data and clean---------------------- 
+# cleaned data with heart disease information --> remove nonzero rows
+# not many data points!!
+heartdis_dat <- with(heartdis_dat, subset(heartdis_dat, 
+                                    (heartdis.wh.25_44>0) & (heartdis.bl.25_44>0) & (heartdis.ot.25_44>0) & (heartdis.his.25_44>0) & 
+                                    (heartdis.wh.45_64>0) & (heartdis.bl.45_64 >0) & (heartdis.ot.45_64>0) & (heartdis.his.45_64>0) &
+                                    (heartdis.wh.65_over>0) & (heartdis.bl.65_over>0) & (heartdis.ot.65_over>0) & (heartdis.his.65_over>0)  
+                                    ) )
+
+
+
+
+xtabs(heartdis.bl.25_44 ~ state.name, exclude = c(-1111), data = heartdis_dat)
+
+# subset data for values >0 to exclude the -1111 and -2222 values
+# leadingCause_dat <- with(leadingCause_dat, subset(leadingCause_dat, subset= c(4:5)>0, select = c(1:35))) # & 
+#                                     (few.fruit>0) & (obesity>0) & (high.blood>0) & 
+#                                     (diabetes>0) & (no.ins>0)))
+
+
+
+# clean up -1111 and -2222 values 
+leadCauseData <- as.data.frame(lapply(leadCauseData, function(x){
+  replace(x, x < 0, 0) 
+}))
+
+str(leadCauseData) # too many columns
+summary(leadCauseData)
+
+
+
+# -------------------------------------------------------------------------------------------------------------------------
+# Load risk Data and clean
+# -------------------------------------------------------------------------------------------------------------------------
 # Load risk data and clean
 riskData <- read.csv('~/dev/Rstudio/data/RISKFACTORSANDACCESSTOCARE.csv')
 summary(riskData)
@@ -136,3 +173,6 @@ risk_dat <- data.frame(lapply(risk_dat, lower.df))
 # riskData <- as.data.frame(lapply(riskData, function(x){
 #   replace(x, x<0, 0)
 # }))
+
+# counting missing values
+count(risk_dat2$No_Exercise[risk_dat2$No_Exercise<0])

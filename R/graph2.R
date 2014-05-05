@@ -149,11 +149,13 @@ plt_obNoEx_1
 
 
 # no exercise on x axis and obesity on y axis
-plt_obNoEx_2 <- ggplot(data = risk_dat, aes(x = no.exercise, y = obesity, 
+plt_obNoEx_2 <- ggplot(data = risk_dat, aes(x = (no.exercise/100), y = (obesity/100), 
                                              color = factor(signif(obesity, 0)))) + 
-  geom_point() + 
-  theme_classic() + 
-  scale_color_discrete(name="Percentage of obesity") +
+  geom_point() +  
+  scale_color_discrete(name="% Obesity") +
+  scale_x_continuous(labels = percent, name = 'No Exercise %s') +
+  scale_y_continuous(labels = percent, name = 'Obesity %s') +
+  theme_classic(base_size = 12, base_family = 'Verdana') +
   ggtitle(label = "Percentage of obesity vs.\n Percentage of No Exercise") 
 plt_obNoEx_2
 

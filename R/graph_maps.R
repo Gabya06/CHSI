@@ -64,12 +64,23 @@ risk_map$obesity_d <- cut_interval(risk_map$obesity ,8)
 #-----------------------------------------------------------------------------------------------
 # plot Obesity accross US states - not at county level
 #-----------------------------------------------------------------------------------------------
+# create dataframe to add state map abbreviations on map
+# state.center - x=long, y=lat. state.abb is a list containing state abbreviations
+state.info <- data.frame(state.center, state.abb)
+# lower names
+state.info <- data.frame(lapply(state.info, lower.df))
+# add group info
+state.info$group <- map_data$group[match(x = state.info$state.abb, map_data$state.abbr)]
+# remove ak and hi (no group)
+state.info <- state.info[!is.na(state.info$group),]
 
 # map of obesity at state level - org palette
+# doesnt include state names
 obesity_map_all_org <- ggplot(map_data, aes(long, lat, group = group)) +
   geom_polygon(aes(fill = obesity_d)) +
   geom_polygon(data = state_df, colour = "black", fill = NA, size =0.2) + 
   geom_polygon(data = county_df, colour = "snow", fill = NA, size =0.1) + 
+  geom_text(data = state.info, aes(x=x, y=y, label = state.abb, group = group), colour ='black') +
   theme_classic() +  
   theme(legend.position="right") + 
   xlab(label = "") +
@@ -79,9 +90,35 @@ obesity_map_all_org <- ggplot(map_data, aes(long, lat, group = group)) +
   theme(axis.ticks = element_blank(), 
         axis.text.x = element_blank(), 
         axis.text.y = element_blank()) + 
-  ggtitle(label = "US Map showing Obesity Intervals \nState Level") +
+  ggtitle(label = "US Map showing Obesity Intervals at the State Level") +
   scale_fill_brewer(type='div', palette = 'RdBu', name = "% Obesity")
 obesity_map_all_org
+
+# obesity map to add color to
+# includes state abbreviations
+obesity_map <- ggplot(map_data, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = obesity_d)) +
+  geom_polygon(data = state_df, colour = "black", fill = NA, size =0.2) + 
+  geom_polygon(data = county_df, colour = "snow", fill = NA, size =0.1) + 
+  geom_text(data = state.info, aes(x=x, y=y, label = state.abb, group = group), colour ='black') +
+  theme_classic() +  
+  theme(legend.position="right") + 
+  xlab(label = "") +
+  ylab(label = "") +
+  scale_x_continuous(expand = c(0,0)) + # expand size of map along x axis 
+  scale_y_continuous(expand = c(0,0)) + # expand size of map along y axis
+  theme(axis.ticks = element_blank(), 
+        axis.text.x = element_blank(), 
+        axis.text.y = element_blank()) + 
+  ggtitle(label = "US Map showing Obesity Intervals at the State Level")
+# pink w state names
+obesity_map_purd <- obesity_map + 
+  scale_fill_brewer(type='seq',palette = 'PuRd', name ="% Obesity") 
+  #geom_point(data = map_data[map_data$high.blood>30,], aes(long,lat, color = high.blood))
+
+
+
+
 
 # map of obesity at state level
 obesity_map_all_purd <- ggplot(map_data, aes(long, lat, group = group)) +
