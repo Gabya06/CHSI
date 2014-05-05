@@ -104,9 +104,10 @@ I explored correlation between different variables and plotted these using heatm
 ![RiskHeatmap](RiskHeatmap.png)
 
 I then subsetted risk data to explore correlations for which the percentages of obesity was greater than 20%. After removing the less than 20 % obesity data, I found that the top 3 correlations between risk factors are:
-<li> Percent of people with diabetes and percent of people with high blood pressure </li>
-<li> Percent of people who reported not exercising and the percent of people who are obese </li>
-<li> Percent of people who reported not exercising and the percent of people who reported having high blood pressure </li>
+
+* Percent of people with diabetes and percent of people with high blood pressure
+* Percent of people who reported not exercising and the percent of people who are obese
+* Percent of people who reported not exercising and the percent of people who reported having high blood pressure
 
 ![RiskHeatmap20](RiskHeatmap20.png)
 
